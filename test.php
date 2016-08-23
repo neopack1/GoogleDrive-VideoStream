@@ -1,6 +1,8 @@
 <?php
 
-#$URL = 'https://drive.google.com/get_video_info?docid=0B7Y9HYJMseiNRkpMQjRzT2dGbWc';
+require('GoogleDriveAPI2.php');
+
+
 $URL = 'https://drive.google.com/get_video_info?docid=1oZLVQulDNKvpT10pmn-P1_tyQNafLdwgIA';
 $curl = curl_init();
 curl_setopt ($curl, CURLOPT_URL, $URL);
