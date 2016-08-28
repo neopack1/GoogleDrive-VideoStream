@@ -7,9 +7,14 @@ class DBM{
 
 	private $dbm;
 
-	function __construct(){
+	function __construct($file){
 
-		$this->dbm = '';
+		$this->dbm =  openDBM($file);
+	}
+
+	function __destructor(){
+
+		closeDBM();
 	}
 
 	function openDBM($file){
@@ -26,8 +31,8 @@ class DBM{
 	function readValue($key){
 
 		if (dba_exists($key, $this->dbm)) {
-		    echo dba_fetch($key, $this->dbm);
-		    dba_delete($key, $this->dbm);
+		    return dba_fetch($key, $this->dbm);
+		    #dba_delete($key, $this->dbm);
 		}
 
 	}
