@@ -6,20 +6,22 @@ class DBM{
 
 
 	private $dbm;
+	private $dbm_file;
 
 	function __construct($file){
 
-		$this->dbm =  openDBM($file);
+		#$this->dbm_file = $file;
+		$this->openDBM($file);
 	}
 
 	function __destructor(){
 
-		closeDBM();
+		$this->closeDBM();
 	}
 
 	function openDBM($file){
 
-		$this->dbm = dba_open($file, "n", "flatfile");
+		$this->dbm = dba_open($file, "c", "flatfile");
 
 		if (!$this->dbm) {
 			echo "dba_open failed\n";
@@ -35,10 +37,12 @@ class DBM{
 		    #dba_delete($key, $this->dbm);
 		}
 
+
 	}
 
 	function writeValue($key, $value){
 		dba_replace($key, $value, $this->dbm);
+
 	}
 
 	function closeDBM() {
