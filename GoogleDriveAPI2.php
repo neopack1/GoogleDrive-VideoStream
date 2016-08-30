@@ -8,8 +8,10 @@ class GoogleDrive{
 	private $cookie;
 	private $auth;
 	private $refreshToken;
+	private $username;
 
 	function __construct($username, $code){
+		$this->username = $username;
 
 		$this->dbm = new DBM('/tmp/' . $username . '.db');
 
@@ -206,7 +208,7 @@ class GoogleDrive{
 		##files
 		preg_match_all ("/\"kind\"\:\s+\"drive\#file\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
 		for ($i = 0; $i < sizeof($queryArray[0]); $i++) {
-		    print "<a href=?file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
+		    print "<a href=?username='.$this->username.'&file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
 
 		}
 
