@@ -23,7 +23,6 @@ class GoogleDrive{
 				print "please visit " . SCOPE . " to authorize.<br>\n";
 				exit;
 			}
-			$this->x();
 		}
 
 	}
@@ -118,48 +117,101 @@ class GoogleDrive{
 	}
 
 
-	function x(){
+	function getVideoURLs($resourceID){
 
 
-$URL = 'https://drive.google.com/get_video_info?docid=0B7Y9HYJMseiNdWFmR3p6emtXSTQ';
-$curl = curl_init();
-curl_setopt ($curl, CURLOPT_URL, $URL);
-curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
-curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
-curl_setopt ($curl, CURLOPT_HEADER, 1);
+		$URL = 'https://drive.google.com/get_video_info?docid='.$resourceID;
+		$curl = curl_init();
+		curl_setopt ($curl, CURLOPT_URL, $URL);
+		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
+		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt ($curl, CURLOPT_HEADER, 1);
 
-#curl_setopt ($curl,CURLOPT_POST, 4);
-#curl_setopt ($curl,CURLOPT_POSTFIELDS, 'client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token='.$value.'&grant_type=refresh_token');
-$response_data = curl_exec ($curl);
-$response_data = urldecode(urldecode($response_data));
+		#curl_setopt ($curl,CURLOPT_POST, 4);
+		#curl_setopt ($curl,CURLOPT_POSTFIELDS, 'client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token='.$value.'&grant_type=refresh_token');
+		$response_data = curl_exec ($curl);
+		$response_data = urldecode(urldecode($response_data));
 
-if(curl_error($curl)){
-    print 'error:' . curl_error($curl);
-}
-curl_close ($curl);
+		if(curl_error($curl)){
+		    print 'error:' . curl_error($curl);
+		}
 
-if (preg_match("/You don't have permission/", $response_data)){
-	print "error: auth";
-	# need to reauth
-	$this->refreshToken();
-	exit;
-}
+		if (preg_match("/You don't have permission/", $response_data)){
+			print "error: auth";
+			# need to reauth
+			$this->refreshToken();
+			curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
+			$response_data = curl_exec ($curl);
+			$response_data = urldecode(urldecode($response_data));
+			if (preg_match("/You don't have permission/", $response_data)){
+				exit;
+			}
+		}
+
+		curl_close ($curl);
+
+		preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
+		print "cookie " . $cookie[1];
+
+		preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
 
 
 
-preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
-print "cookie " . $cookie[1];
+		#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
+		#}
+		print "url = " . $queryArray[1][1];
+		stream($queryArray[1][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+	}
 
-preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
+
+	function getFolder($resourceID){
+
+
+		$URL = "https://www.googleapis.com/drive/v2/files?q='".$resourceID."'+in+parents";
+		$curl = curl_init();
+		curl_setopt ($curl, CURLOPT_URL, $URL);
+		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
+		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt ($curl, CURLOPT_HEADER, 1);
+		$response_data = curl_exec ($curl);
+
+		if(curl_error($curl)){
+		    print 'error:' . curl_error($curl);
+		}
+
+		if (preg_match("/You don't have permission/", $response_data)){
+			print "error: auth";
+			# need to reauth
+			$this->refreshToken();
+			curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
+			$response_data = curl_exec ($curl);
+			$response_data = urldecode(urldecode($response_data));
+			if (preg_match("/You don't have permission/", $response_data)){
+				exit;
+			}
+		}
+
+		curl_close ($curl);
+
+		##folders
+		preg_match_all ("/\"kind\"\:\s+\"drive\#folder\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
+		for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+		    print "<a href=?folder=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
+
+		}
+
+		##files
+		preg_match_all ("/\"kind\"\:\s+\"drive\#file\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
+		for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+		    print "<a href=?file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
+
+		}
 
 
 
-#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
-#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
-#}
-print "url = " . $queryArray[1][1];
-stream($queryArray[1][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
-}
+	}
 }
 ?>

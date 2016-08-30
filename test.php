@@ -7,6 +7,8 @@ require('dbm.php');
 
 $username = '';
 $code = '';
+$folder = '';
+$file = '';
 
 parse_str($_SERVER['QUERY_STRING']);
 
@@ -20,5 +22,12 @@ if ($username == ''){
 
 $gd = new GoogleDrive($username, $code);
 
+if ($file != ''){
+	$gd->getVideoURLs($file);
+}elseif($folder != ''){
+	$gd->getFolder($folder);
+}else{
+	$gd->getFolder('root');
+}
 
 ?>
