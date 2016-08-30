@@ -182,14 +182,14 @@ class GoogleDrive{
 		    print 'error:' . curl_error($curl);
 		}
 
-		if (preg_match("/You don't have permission/", $response_data)){
+		if (preg_match("/Invalid Credentials/", $response_data)){
 			print "error: auth";
 			# need to reauth
 			$this->refreshToken();
 			curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
 			$response_data = curl_exec ($curl);
 			$response_data = urldecode(urldecode($response_data));
-			if (preg_match("/You don't have permission/", $response_data)){
+			if (preg_match("/Invalid Credentials/", $response_data)){
 				exit;
 			}
 		}

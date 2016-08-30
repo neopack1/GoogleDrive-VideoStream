@@ -28,6 +28,7 @@ if ($file != ''){
 	$gd->getFolder($folder);
 }else{
 	$gd->getFolder('root');
+
 }
 
 ?>
