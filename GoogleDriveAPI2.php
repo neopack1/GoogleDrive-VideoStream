@@ -199,16 +199,16 @@ class GoogleDrive{
 		curl_close ($curl);
 
 		##folders
-		preg_match_all ("/\"kind\"\:\s+\"drive\#folder\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
+		preg_match_all ("/\"kind\"\:\s+\"drive\#folder\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,[^\}]+folder/", $response_data, $queryArray);
 		for ($i = 0; $i < sizeof($queryArray[0]); $i++) {
-		    print "<a href=?folder=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
+		    print "<a href=?username=".$this->username."&folder=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
 
 		}
 
 		##files
-		preg_match_all ("/\"kind\"\:\s+\"drive\#file\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
+		preg_match_all ("/\"kind\"\:\s+\"drive\#file\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,[^\}]+video/", $response_data, $queryArray);
 		for ($i = 0; $i < sizeof($queryArray[0]); $i++) {
-		    print "<a href=?username='.$this->username.'&file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
+		    print "<a href=?username=".$this->username."&file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
 
 		}
 
