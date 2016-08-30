@@ -1,50 +1,73 @@
 <?php
 
 
-class DBM{
+class GoogleDrive{
 
-	define('CLIENT_ID', '');
-	define('CLIENT_SECRET', '');
-	define('REDIRECT_URI', 'urn:ietf:wg:oauth:2.0:oob');
 
 	private $dbm;
 	private $cookie;
 	private $auth;
+	private $refreshToken;
 
-	function __construct(){
+	function __construct($username, $code){
 
-		$this->dbm = new DBM;
-		$this->dbm->openDBM("/tmp/test.db");
-		$this->auth = $this->dbm->readValue("auth");
+		$this->dbm = new DBM('/tmp/' . $username . '.db');
+
+		if ($code != ''){
+			$this->getOAuth2($code);
+		}else{
+			$this->auth = $this->dbm->readValue("auth");
+			$this->refreshToken = $this->dbm->readValue("refreshToken");
+
+			if ($this->refreshToken == ''){
+				print "please visit " . SCOPE . " to authorize.<br>\n";
+				exit;
+			}
+			$this->x();
+		}
 
 	}
 
 	function __destruct(){
-		$this->dbm->closeDBM();
+		#
 	}
 
-	function getOAuth2RefreshToken($token)
+	function refreshToken()
 	{
 
-	#        'approval_prompt' => 'force',
 
-	    $params = array(
+	    $curl = curl_init();
 
-	            'code' => $code,
+	    curl_setopt_array($curl, array(
+	        CURLOPT_POST => true,
+	        CURLOPT_POSTFIELDS => array(
 	            'client_id' => CLIENT_ID,
 	            'client_secret' => CLIENT_SECRET,
-	            'refresh_token' => $token,
+	            'refresh_token' => $this->refreshToken,
 	            'grant_type' => 'refresh_token'
-	    );
+	        ),
+	        CURLOPT_URL => "https://accounts.google.com/o/oauth2/token",
+	        CURLOPT_SSL_VERIFYPEER => false,
+	        CURLOPT_RETURNTRANSFER => true
+	    ));
 
-	    $request_token = "https://www.googleapis.com/oauth2/v3/token" . '?' . http_build_query($params);
+	    $response_data = curl_exec($curl);
 
-	    // Redirect to Google's OAuth 2.0 server
-	    header('Location: ' . $request_token);
+		if(curl_error($curl)){
+		    print 'error:' . curl_error($curl);
+		}
+		curl_close ($curl);
+
+
+	    $response = json_decode($response_data);
+
+
+	    $this->auth = $response->access_token;
+		$this->dbm->writeValue("auth", $this->auth);
 
 	}
 
-	function getOAuth2Code($code)
+	function getOAuth2($code)
 	{
 
 	    $curl = curl_init();
@@ -58,29 +81,85 @@ class DBM{
 	            'redirect_uri' => REDIRECT_URI,
 	            'grant_type' => 'authorization_code'
 	        ),
-	        CURLOPT_URL => "https://www.googleapis.com/oauth2/v3/token",
+	        CURLOPT_URL => "https://accounts.google.com/o/oauth2/token",
 	        CURLOPT_SSL_VERIFYPEER => false,
 	        CURLOPT_RETURNTRANSFER => true
 	    ));
 
 	    $response_data = curl_exec($curl);
-
 	    curl_close($curl);
 
 	    $response = json_decode($response_data);
 
 	    if (isset($response->refresh_token)) {
-	        // Refresh tokens are for long term user and should be stored
-	        // They are granted first authorization for offline access
-	        file_put_contents("./GmailToken.txt", $token);
+			$this->dbm->writeValue("refreshToken", $response->refresh_token);
+			$this->refreshToken = $response->refresh_token;
 	    }
 
 	    // The access token should be used first else invalid_grant error
-	    $_SESSION['access_token'] = $response->access_token;
-
-	    // Reload the page but without the Query String
-	    header("Location: " . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+	    $this->auth = $response->access_token;
+		$this->dbm->writeValue("auth", $this->auth);
 
 	}
+
+
+	function stream($link, $cookie){
+	    $ch = curl_init($link);
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array($cookie));
+	    curl_setopt($ch,CURLOPT_WRITEFUNCTION , '__writeFunction');
+	    curl_exec($ch);
+	    curl_close($ch);
+
+	  }
+
+	function __writeFunction($curl, $data) {
+	    echo $data;
+	    return strlen($data);
+	}
+
+
+	function x(){
+
+
+$URL = 'https://drive.google.com/get_video_info?docid=0B7Y9HYJMseiNdWFmR3p6emtXSTQ';
+$curl = curl_init();
+curl_setopt ($curl, CURLOPT_URL, $URL);
+curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
+curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 1);
+curl_setopt ($curl, CURLOPT_HEADER, 1);
+
+#curl_setopt ($curl,CURLOPT_POST, 4);
+#curl_setopt ($curl,CURLOPT_POSTFIELDS, 'client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token='.$value.'&grant_type=refresh_token');
+$response_data = curl_exec ($curl);
+$response_data = urldecode(urldecode($response_data));
+
+if(curl_error($curl)){
+    print 'error:' . curl_error($curl);
+}
+curl_close ($curl);
+
+if (preg_match("/You don't have permission/", $response_data)){
+	print "error: auth";
+	# need to reauth
+	$this->refreshToken();
+	exit;
+}
+
+
+
+preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
+print "cookie " . $cookie[1];
+
+preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
+
+
+
+#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
+#}
+print "url = " . $queryArray[1][1];
+stream($queryArray[1][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+}
 }
 ?>

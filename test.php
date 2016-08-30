@@ -1,5 +1,7 @@
 <?php
 
+require('config.php');
+
 require('GoogleDriveAPI2.php');
 require('dbm.php');
 
