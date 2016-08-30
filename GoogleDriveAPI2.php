@@ -198,14 +198,14 @@ class GoogleDrive{
 
 		##folders
 		preg_match_all ("/\"kind\"\:\s+\"drive\#folder\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
-		for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+		for ($i = 0; $i < sizeof($queryArray[0]); $i++) {
 		    print "<a href=?folder=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
 
 		}
 
 		##files
 		preg_match_all ("/\"kind\"\:\s+\"drive\#file\"\,\s+\"id\"\:\s+\"([^\"]+)\"\,\s+[^\}]+\"title\"\:\s+\"([^\"]+)\"\,/", $response_data, $queryArray);
-		for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+		for ($i = 0; $i < sizeof($queryArray[0]); $i++) {
 		    print "<a href=?file=".$queryArray[1][$i].">".$queryArray[2][$i]."</a><br/>";
 
 		}
