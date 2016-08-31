@@ -163,7 +163,7 @@ class GoogleDrive{
 		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
 		#}
 #		print "url = " . $queryArray[1][1];
-
+$queryArray[1][1] = "https://r13---sn-nx57yn7d.c.drive.google.com/videoplayback?requiressl=yes&id=62d9c46cf06cbae8&itag=18&source=webdrive&ttl=transient&app=explorer&ip=104.193.224.179&ipbits=0&expire=1472701390&cp=QVJMVEhfUFNXQVhNOkdlRDgyWTViV2dt&sparams=requiressl,id,itag,source,ttl,ip,ipbits,expire,cp&signature=4D6A995810CEB028A986BB453A91FF657079851E.AEE60B40BD9EF8674626FF75F6D260E973948EBE&key=ck2&mm=30&mn=sn-nx57yn7d&ms=nxu&mt=1472686172&mv=u&nh=IgpwcjAyLnNlYTAzKgkxMjcuMC4wLjE&pl=24&sc=yes,43";
 		if ($playback != ''){
 			$this->stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
 		}else{
@@ -171,7 +171,6 @@ class GoogleDrive{
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i." ".$queryArray[1][$i]."</a><br/>";
 			}
-
 		}
 	}
 
