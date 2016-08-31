@@ -119,7 +119,7 @@ class GoogleDrive{
 	}
 
 
-	function getVideoURLs($resourceID){
+	function getVideoURLs($resourceID, $playback){
 
 
 		$URL = 'https://drive.google.com/get_video_info?docid='.$resourceID;
@@ -140,7 +140,7 @@ class GoogleDrive{
 		}
 
 		if (preg_match("/You don't have permission/", $response_data)){
-			print "error: auth";
+			#print "error: auth";
 			# need to reauth
 			$this->refreshToken();
 			curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
@@ -154,7 +154,6 @@ class GoogleDrive{
 		curl_close ($curl);
 
 		preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
-		print "cookie " . $cookie[1];
 
 		preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
 
@@ -163,8 +162,15 @@ class GoogleDrive{
 		#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
 		#}
-		print "url = " . $queryArray[1][1];
-		stream($queryArray[1][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+#		print "url = " . $queryArray[1][1];
+
+		if ($playback != ''){
+			stream($queryArray[$playback][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+		}else{
+			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
+			    print "<a href=?username=".$this->username."&file=".$queryArray[1][$i]."&playback=".$i.">quality ".$i."</a><br/>";
+			}
+		}
 	}
 
 
@@ -185,7 +191,7 @@ class GoogleDrive{
 		}
 
 		if (preg_match("/Invalid Credentials/", $response_data)){
-			print "error: auth";
+			#print "error: auth";
 			# need to reauth
 			$this->refreshToken();
 			curl_setopt ($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->auth));
