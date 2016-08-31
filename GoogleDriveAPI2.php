@@ -155,9 +155,9 @@ class GoogleDrive{
 
 		preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
 
+
+		$response_data = preg_replace("/\&url\=/", "|", $response_data);
 		preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
-
-
 
 		#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
@@ -169,8 +169,9 @@ class GoogleDrive{
 		}else{
 			print "Copy one of these quality URLs into 3rd party player:<br/>";
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
-			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a><br/>";
+			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i." ".$queryArray[1][$i]."</a><br/>";
 			}
+
 		}
 	}
 
