@@ -168,7 +168,7 @@ class GoogleDrive{
 			stream($queryArray[$playback][1], "Cookie: DRIVE_STREAM=" . $cookie[1]);
 		}else{
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
-			    print "<a href=?username=".$this->username."&file=".$queryArray[1][$i]."&playback=".$i.">quality ".$i."</a><br/>";
+			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a><br/>";
 			}
 		}
 	}
