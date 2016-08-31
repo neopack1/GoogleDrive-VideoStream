@@ -167,6 +167,7 @@ class GoogleDrive{
 		if ($playback != ''){
 			$this->stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
 		}else{
+			print "Copy one of these quality URLs into 3rd party player:<br/>";
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a><br/>";
 			}
