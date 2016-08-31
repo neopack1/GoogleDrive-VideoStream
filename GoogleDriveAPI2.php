@@ -107,7 +107,7 @@ class GoogleDrive{
 	function stream($link, $cookie){
 	    $ch = curl_init($link);
 		curl_setopt ($ch, CURLOPT_HTTPHEADER, array($cookie));
-	    curl_setopt($ch,CURLOPT_WRITEFUNCTION , '__writeFunction');
+	    curl_setopt($ch,CURLOPT_WRITEFUNCTION , array($this,'__writeFunction'));
 	    curl_exec($ch);
 	    curl_close($ch);
 
@@ -165,7 +165,7 @@ class GoogleDrive{
 #		print "url = " . $queryArray[1][1];
 
 		if ($playback != ''){
-			stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+			$this->stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
 		}else{
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a><br/>";
