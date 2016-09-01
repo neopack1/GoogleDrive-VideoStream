@@ -171,7 +171,7 @@ $queryArray[1][1] = 'https://r13---sn-nx57yn7d.c.drive.google.com/videoplayback?
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i." ".$queryArray[1][$i]."</a><br/>";
 			}
-			print '<video class="p-video" preload="auto" autoplay="" type="video/mp4" src="?username='.$this->username.'&file='.$resourceID.'&playback=6"/>';
+			print '<video controls height="340" width="640" src="?username='.$this->username.'&file='.$resourceID.'&playback=6"/>';
 		}
 	}
 
