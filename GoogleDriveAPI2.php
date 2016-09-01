@@ -163,12 +163,15 @@ class GoogleDrive{
 		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
 		#}
 #		print "url = " . $queryArray[1][1];
-		if ($playback != '' and $browser == ''){
+		if ($playback == 'o' and $browser == ''){
+			$this->stream('https://www.googleapis.com/drive/v2/files/'.$resourceID.'?alt=media', "Authorization: Bearer " . $this->auth);
+		}elseif ($playback != '' and $browser == ''){
 			$this->stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
 		}elseif ($playback != '' and $browser == '1'){
 			print '<video autoplay controls="true" height="100%" width="100%" src="?username='.$this->username.'&file='.$resourceID.'&playback='.$playback.'"></video>';
 		}else{
 			print "Copy one of these quality URLs into 3rd party player:<br/>";
+			print "<a href=?username=".$this->username."&file=".$resourceID."&playback=o>quality original</a> [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=o>here</a> to play in browser]<br/>";
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a> ".$queryArray[1][$i]." [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=".$i.">here</a> to play in browser]<br/>";
 			}
