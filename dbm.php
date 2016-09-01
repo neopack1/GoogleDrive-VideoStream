@@ -34,12 +34,13 @@ class DBM{
 
 		$this->openDBM($this->dbm_file);
 
+		$value = '';
 		if (dba_exists($key, $this->dbm)) {
-		    return dba_fetch($key, $this->dbm);
+		    $value =  dba_fetch($key, $this->dbm);
 		    #dba_delete($key, $this->dbm);
 		}
 		$this->closeDBM();
-
+		return $value;
 
 	}
 
