@@ -10,13 +10,13 @@ class DBM{
 
 	function __construct($file){
 
-		#$this->dbm_file = $file;
-		$this->openDBM($file);
+		$this->dbm_file = $file;
+		#$this->openDBM($file);
 	}
 
 	function __destructor(){
 
-		$this->closeDBM();
+		#$this->closeDBM();
 	}
 
 	function openDBM($file){
@@ -32,16 +32,22 @@ class DBM{
 
 	function readValue($key){
 
+		$this->openDBM($this->dbm_file);
+
 		if (dba_exists($key, $this->dbm)) {
 		    return dba_fetch($key, $this->dbm);
 		    #dba_delete($key, $this->dbm);
 		}
+		$this->closeDBM();
 
 
 	}
 
 	function writeValue($key, $value){
+		$this->openDBM($this->dbm_file);
 		dba_replace($key, $value, $this->dbm);
+		$this->closeDBM();
+
 
 	}
 
