@@ -10,6 +10,7 @@ $code = '';
 $folder = '';
 $file = '';
 $playback = '';
+$browser = '';
 
 parse_str($_SERVER['QUERY_STRING']);
 
@@ -24,7 +25,7 @@ if ($username == ''){
 $gd = new GoogleDrive($username, $code);
 
 if ($file != ''){
-	$gd->getVideoURLs($file, $playback);
+	$gd->getVideoURLs($file, $playback, $browser);
 
 }elseif($folder != ''){
 	$gd->getFolder($folder);

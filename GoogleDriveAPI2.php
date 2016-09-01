@@ -119,7 +119,7 @@ class GoogleDrive{
 	}
 
 
-	function getVideoURLs($resourceID, $playback){
+	function getVideoURLs($resourceID, $playback, $browser){
 
 
 		$URL = 'https://drive.google.com/get_video_info?docid='.$resourceID;
@@ -163,14 +163,15 @@ class GoogleDrive{
 		#	print "try this link -- <a href=" . $queryArray[1][$i] . ">". $queryArray[1][$i] ."</a><br><br>\n";
 		#}
 #		print "url = " . $queryArray[1][1];
-		if ($playback != ''){
+		if ($playback != '' and $browser == ''){
 			$this->stream($queryArray[1][$playback], "Cookie: DRIVE_STREAM=" . $cookie[1]);
+		}elseif ($playback != '' and $browser == ''){
+			print '<video loop autoplay controls="true" height="100%" width="100%" src="?username='.$this->username.'&file='.$resourceID.'&playback='.$playback.'"></video>';
 		}else{
 			print "Copy one of these quality URLs into 3rd party player:<br/>";
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
-			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i." ".$queryArray[1][$i]."</a><br/>";
+			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a> ".$queryArray[1][$i]." [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=".$i.">here</a> to play in browser]<br/>";
 			}
-			print '<video loop autoplay controls="true" height="100%" width="100%" type="video/mp4" src="?username='.$this->username.'&file='.$resourceID.'&playback=2"></video>';
 		}
 	}
 
