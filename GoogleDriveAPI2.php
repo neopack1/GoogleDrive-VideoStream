@@ -156,7 +156,7 @@ class GoogleDrive{
 		preg_match ("/DRIVE_STREAM\=([^\;]+);/", $response_data, $cookie);
 
 
-		$response_data = preg_replace("/\&url\=/", "|", $response_data);
+		##$response_data = preg_replace("/\&url\=/", "|", $response_data);
 		preg_match_all ("/([^\|]+)\|/", $response_data, $queryArray);
 
 		#for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
@@ -173,7 +173,67 @@ class GoogleDrive{
 			print "Copy one of these quality URLs into 3rd party player:<br/>";
 			print "<a href=?username=".$this->username."&file=".$resourceID."&playback=o>quality original</a> [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=o>here</a> to play in browser]<br/>";
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
-			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i."</a> ".$queryArray[1][$i]." [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=".$i.">here</a> to play in browser]<br/>";
+				preg_match ("/yes\,(\d+)/", $queryArray[1][$i], $itag);
+
+
+		switch ($itag[1]) {
+		    case 5:
+		        $quality = 'Low Quality, 240p, FLV, 400x240';
+		        break;
+		    case 17:
+		        $quality = 'Low Quality, 144p, 3GP, 0x0';
+		        break;
+		    case 18:
+		        $quality = 'Medium Quality, 360p, MP4, 480x360';
+		        break;
+		    case 22:
+		        $quality = 'High Quality, 720p, MP4, 1280x720';
+		        break;
+		    case 34:
+		        $quality = 'Medium Quality, 360p, FLV, 640x360';
+		        break;
+		    case 35:
+		        $quality = 'Standard Definition, 480p, FLV, 854x480';
+		        break;
+		    case 36:
+		        $quality = 'Low Quality, 240p, 3GP, 0x0';
+		        break;
+		    case 37:
+		        $quality = 'Full High Quality, 1080p, MP4, 1920x1080';
+		        break;
+		    case 38:
+		        $quality = 'Original Definition, MP4, 4096x3072';
+		        break;
+		    case 43:
+		        $quality = 'Medium Quality, 360p, WebM, 640x360';
+		        break;
+		    case 44:
+		        $quality = 'Standard Definition, 480p, WebM, 854x480';
+		        break;
+		    case 45:
+		        $quality = 'High Quality, 720p, WebM, 1280x720';
+		        break;
+		    case 46:
+		        $quality = 'Full High Quality, 1080p, WebM, 1280x720';
+		        break;
+		    case 82:
+		        $quality = 'Medium Quality 3D, 360p, MP4, 640x360';
+		        break;
+		    case 84:
+		        $quality = 'High Quality 3D, 720p, MP4, 1280x720';
+		        break;
+		    case 102:
+		        $quality = 'Medium Quality 3D, 360p, WebM, 640x360';
+		        break;
+		    case 104:
+		        $quality =  'High Quality 3D, 720p, WebM, 1280x720';
+		        break;
+
+		    default:
+		        $quality =  'transcoded (unknown) quality';
+		}
+
+			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">".$quality."</a> [click <a href=?username=".$this->username."&file=".$resourceID."&browser=1&playback=".$i.">here</a> to play in browser]<br/>";
 			}
 		}
 	}
