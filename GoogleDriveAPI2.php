@@ -170,7 +170,7 @@ class GoogleDrive{
 			for ($i = 1; $i < sizeof($queryArray[0]); $i++) {
 			    print "<a href=?username=".$this->username."&file=".$resourceID."&playback=".$i.">quality ".$i." ".$queryArray[1][$i]."</a><br/>";
 			}
-			print '<video loop autoplay controls="true" height="100%" width="100%" type="video/mp4" src="?username='.$this->username.'&file='.$resourceID.'&playback=6"/>';
+			print '<video loop autoplay controls="true" height="100%" width="100%" type="video/mp4" src="?username='.$this->username.'&file='.$resourceID.'&playback=2"></video>';
 		}
 	}
 
